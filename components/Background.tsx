@@ -1,36 +1,35 @@
 import { Dispatch, SetStateAction, useContext, useEffect } from "react"
 import { useSpring, animated as a } from "@react-spring/web"
 
-import { BackgroundContext } from "../contexts/contexts"
-
 import Image from "next/image"
 
 import { images } from "../util/data"
 
+const timestamp = () => Math.floor(Date.now())
 
+const x = () => Math.cos(timestamp() / 5000) * 100
+const y = () => Math.sin(timestamp() / 5000) * 100
 
 const Background = ({ setReady }: { setReady: (image: string) => void }) => {
 
-    const backgroundContext = useContext(BackgroundContext)
-
-    const { backgroundX, backgroundY } = backgroundContext
-
     const [backgroundImageSpring, setBackgroundImageSpring] = useSpring(() => ({
         scale: 1.5,
-        x: backgroundX,
-        y: backgroundY,
+        x: 0,
+        y: 0,
     }))
 
     useEffect(() => {
+        setBackgroundImageSpring.set({
+            x: x(),
+            y: y(),
+        })
+
         const interval = setInterval(() => {
             // get timestamp in seconds
-            const timestamp = Math.floor(Date.now())
             // rotate the background in a circular motion using sine and cosine
-            const x = Math.cos(timestamp / 5000) * 100
-            const y = Math.sin(timestamp / 5000) * 100
             setBackgroundImageSpring.start({
-                x,
-                y,
+                x: x(),
+                y: y(),
             })
         }, 10)
 

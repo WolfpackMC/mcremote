@@ -8,8 +8,7 @@ const Graph = () => {
 
     const [paused, setPaused] = useState(false)
 
-    const [data, setData] = useState([
-    ])
+    const [time, setTime] = useState(new Date())
     const graphRef = useRef<HTMLDivElement>(null)
 
     const [zoomValue, setZoomValue] = useState(10000)
@@ -17,6 +16,10 @@ const Graph = () => {
     const [zoomSpring, setZoomSpring] = useSpring(() => ({
         zoomValue: 10000,
     }))
+
+    const [data, setData] = useState<[Date, number, number][]>([
+        [new Date(), 0, 0],
+    ])
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -38,39 +41,41 @@ const Graph = () => {
 
     useEffect(() => {
         if (graphRef.current) {
-            const graph = new Dygraph(graphRef.current, data, {
-                legend: "always",
-                labels: ["Time", "Temperature", "Humidity"],
-            })
-
-            if (graph) {
-                const labels = graph.getLabels()
-                if (labels) {
-                    labels.shift()
-                    setLabels(labels)
+            if (data.length > 0) {
+                const graph = new Dygraph(graphRef.current, data, {
+                    legend: "always",
+                    labels: ["Time", "Temperature", "Humidity"],
+                })
+    
+                if (graph) {
+                    const labels = graph.getLabels()
+                    if (labels) {
+                        labels.shift()
+                        setLabels(labels)
+                    }
+                }
+    
+                // Loop through each boolean in the visibility array and set the visibility of the corresponding label
+                visibility.forEach((visible, index) => {
+                    graph.setVisibility(index, visible)
+                })
+    
+                // Scroll to the right
+    
+                // Get date window options
+                const dateWindow = graph.xAxisRange()
+    
+                // Set the date window to the current date and the current date minus the zoom value
+                graph.updateOptions({
+                    dateWindow: [dateWindow[1] - zoomValue, dateWindow[1]]
+                })
+        
+                return () => {
+                    graph.destroy()
                 }
             }
-
-            // Loop through each boolean in the visibility array and set the visibility of the corresponding label
-            visibility.forEach((visible, index) => {
-                graph.setVisibility(index, visible)
-            })
-
-            // Scroll to the right
-
-            // Get date window options
-            const dateWindow = graph.xAxisRange()
-
-            // Set the date window to the current date and the current date minus the zoom value
-            graph.updateOptions({
-                dateWindow: [dateWindow[1] - zoomValue, dateWindow[1]]
-            })
-    
-            return () => {
-                graph.destroy()
-            }
         }
-    }, [data, visibility, zoomValue])
+    }, [time, data, visibility, zoomValue])
 
     
     return <>

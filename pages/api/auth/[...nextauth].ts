@@ -25,31 +25,37 @@ export default NextAuth({
                 // })
 
                 if (credentials && credentials.username && credentials.password) {
-                    const user = await client.get({
-                        TableName: "mcremote_users",
-                        Key: {
-                            username: credentials.username,
-                        },
-                    })
-                    if (user.Item && user.Item.pass) {
-                        const [salt, hashed_password] = user.Item.pass.split("$")
-
-                        // Decode the salt from base64
-                        const saltBuffer = Buffer.from(salt, "base64")
-                        const hashed_passwordBuffer = Buffer.from(hashed_password, "base64")
-                        const pepper = process.env.PEPPER as string
-                
-                        // Convert saltBuffer to uint8array
-                        const saltUint8Array = new Uint8Array(saltBuffer)
-                
-                
-                
-                        const newHash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pepper + saltUint8Array + credentials.password))
-                
-                        if (Buffer.from(newHash).equals(hashed_passwordBuffer)) {
-                            console.log("It worked, yo")
-                            return { id: user.Item.id, name: user.Item.username }
+                    try {
+                        console.log("a")
+                        const user = await client.get({
+                            TableName: "mcremote_users",
+                            Key: {
+                                username: credentials.username,
+                            },
+                        })
+                        console.log("b")
+                        if (user.Item && user.Item.pass) {
+                            const [salt, hashed_password] = user.Item.pass.split("$")
+    
+                            // Decode the salt from base64
+                            const saltBuffer = Buffer.from(salt, "base64")
+                            const hashed_passwordBuffer = Buffer.from(hashed_password, "base64")
+                            const pepper = process.env.PEPPER as string
+                    
+                            // Convert saltBuffer to uint8array
+                            const saltUint8Array = new Uint8Array(saltBuffer)
+                    
+                    
+                    
+                            const newHash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pepper + saltUint8Array + credentials.password))
+                    
+                            if (Buffer.from(newHash).equals(hashed_passwordBuffer)) {
+                                console.log("It worked, yo")
+                                return { id: user.Item.id, name: user.Item.username }
+                            }
                         }
+                    } catch (e) {
+                        console.log(e)
                     }
                 }
                 return null

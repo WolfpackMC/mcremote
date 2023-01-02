@@ -6,11 +6,7 @@ import { images, setImageLoaded } from "../util/data"
 import { useSpring, animated as a } from "@react-spring/web"
 
 import { useRouter } from "next/router"
-
-import { Icon } from "@iconify/react"
 import dynamic from "next/dynamic"
-
-import { trpc } from '../util/trpc'
 
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client'
 
@@ -24,52 +20,12 @@ const client = createTRPCProxyClient<AppRouter>({
   ],
 })
 
-const GraphComponent = dynamic(() => import("../components/Graph"), { ssr: false })
+const GraphComponent = dynamic(() => import("../components/Graph"), { ssr: false, loading: () => <div>Loading...</div> })
 
 import { useSession, signIn, signOut } from "next-auth/react"
 
 import { useForm } from "react-hook-form"
 import BarLoader from "react-spinners/BarLoader"
-
-const sessionExists = async (setLoginSpring: any, setContentSpring: any, setLoggedIn: any, setShowLogin: any) => {
-  if (localStorage.getItem("session_id")) {
-    const res = await fetch("/api/token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        session_id: localStorage.getItem("session_id"),
-      }),
-    })
-    const data = await res.json()
-  
-    if (data.session) {
-      setLoginSpring.start({
-        opacity: 0,
-      })
-      setContentSpring.start({
-        opacity: 1,
-        scale: 1,
-      })
-      setLoggedIn(true)
-    } else {
-      setLoginSpring.start({
-        opacity: 1,
-        scale: 1,
-      })
-
-      setShowLogin(true)
-    }
-  } else {
-    setLoginSpring.start({
-      opacity: 1,
-      scale: 1,
-  })
-
-    setShowLogin(true)
-  }
-}
 
 const pollDetails = async (setRemoteData: any) => {
   const data = await client.poll.query()
@@ -112,12 +68,6 @@ const Index = () => {
 
   const [showLogin, setShowLogin] = useState(false)
 
-  const [requestingSignup, setRequestingSignup] = useState(false)
-
-  const [requested, setRequested] = useState(false)
-
-  const graphRef = useRef<HTMLDivElement>(null)
-
   const [backgroundSpring, setBackgroundSpring] = useSpring(() => ({
     scale: 1,
     opacity: 0,
@@ -125,7 +75,7 @@ const Index = () => {
 
   const [loginSpring, setLoginSpring] = useSpring(() => ({
     scale: 0.8,
-    opacity: 0,
+    opacity: 1,
   }))
 
   const [contentSpring, setContentSpring] = useSpring(() => ({
@@ -238,7 +188,9 @@ const Index = () => {
                   {errorNotification}
               </p>
               }
-              <button type="submit" className="text-zinc-300 bg-zinc-900/50 p-2 m-2">{loggingIn ? <BarLoader color="#36d7b7" /> : "Login"}</button>
+              <div>
+                <button type="submit" className="text-zinc-300 bg-zinc-900/50 p-2 m-2">{loggingIn ? <BarLoader color="#36d7b7" /> : "Login"}</button>
+              </div>
           </form>
         </div>
       }
