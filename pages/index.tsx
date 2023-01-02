@@ -131,12 +131,21 @@ const Index = () => {
                 opacity: 1,
                 scale: 1,
               })
+
+              setLoggedIn(false)
         
               setShowLogin(true)
             }
         }
     }
   }, [loadedImages, setBackgroundSpring, setLoginSpring, setContentSpring, session])
+
+  useEffect(() => {
+    setLoginSpring.start({
+      opacity: 1,
+      scale: 1,
+    })
+  }, [setLoginSpring])
 
   useEffect(() => {
     if (loggingIn) {
