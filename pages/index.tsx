@@ -28,8 +28,12 @@ import { useForm } from "react-hook-form"
 import BarLoader from "react-spinners/BarLoader"
 
 const pollDetails = async (setRemoteData: any) => {
-  const data = await client.poll.query()
-  setRemoteData(data)
+  try {
+    const data = await client.poll.query()
+    setRemoteData(data)
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 const setRedstoneButton = async (num: number, setRemoteData: any) => {
@@ -53,6 +57,8 @@ const Index = () => {
 
   const [errorNotification, setErrorNotification] = useState("")
 
+  const [waiting, setWaiting] = useState({redstone_1: false})
+
   const [remoteData, setRemoteData] = useState<{ redstone_1: {state: boolean, name: string} }>(
     {
       redstone_1: {
@@ -67,6 +73,10 @@ const Index = () => {
   const [loggedIn, setLoggedIn] = useState(false)
 
   const [showLogin, setShowLogin] = useState(false)
+
+  const [showContent, setShowContent] = useState(false)
+
+  const [renderGraph, setRenderGraph] = useState(false)
 
   const [backgroundSpring, setBackgroundSpring] = useSpring(() => ({
     scale: 1,
@@ -120,16 +130,30 @@ const Index = () => {
             if (session) {
               setLoginSpring.start({
                 opacity: 0,
+                scale: 1.2,
               })
+              setShowContent(true)
               setContentSpring.start({
                 opacity: 1,
                 scale: 1,
+                onRest: () => {
+                  setRenderGraph(true)
+                },
               })
               setLoggedIn(true)
             } else {
               setLoginSpring.start({
                 opacity: 1,
                 scale: 1,
+              })
+
+              setContentSpring.start({
+                opacity: 0,
+                scale: 0.8,
+                onRest: () => {
+                  setShowContent(false)
+                  setRenderGraph(false)
+                },
               })
 
               setLoggedIn(false)
@@ -139,6 +163,15 @@ const Index = () => {
         }
     }
   }, [loadedImages, setBackgroundSpring, setLoginSpring, setContentSpring, session])
+
+  useEffect(() => {
+    if (session) {
+      setLoginSpring.start({
+        opacity: 0,
+        scale: 1.2,
+      })
+    }
+  }, [session, setLoginSpring])
 
   useEffect(() => {
     setLoginSpring.start({
@@ -152,16 +185,25 @@ const Index = () => {
       signIn("credentials", {
         username: username,
         password: password,
-        options: {
-          redirect: false,
-        },
         callbackUrl: "/",
+        redirect: false,
+      }).then((res) => {
+        if (res && res.ok) {
+          setLoggingIn(false)
+        } else {
+          setErrorNotification("Invalid username or password")
+          setLoggingIn(false)
+        }
+        setUsername("")
+        setPassword("")
       })
     }
   }, [loggingIn, username, password])
 
   useEffect(() => {
     if (loggedIn) {
+      pollDetails(setRemoteData)
+
       const interval = setInterval(() => {
         pollDetails(setRemoteData)
       }, 500)
@@ -184,12 +226,12 @@ const Index = () => {
         <Background setReady={() => setImageLoaded(images[0], setLoadedImages)} />
       </a.div>
       {showLogin && <a.div style={loginSpring} className="w-[400px] h-[400px] fixed bg-zinc-900/75 rounded-xl left-0 right-0 top-20 m-auto">
-      {!session &&
+      {showLogin &&
         <div className="text-center m-4">
           <h1 className="text-4xl font-bold text-white">Minecraft Remote (work in progress!)</h1>
           <form onSubmit={handleSubmit(onSubmit)}>
-              <input {...register("username", {required: true})} className="text-zinc-300 bg-zinc-900/50 p-2 m-2" placeholder="Username" />
-              <input {...register("password", {required: true})} className="text-zinc-300 bg-zinc-900/50 p-2 m-2" placeholder="Password" type="password" />
+              <input {...register("username", {required: true})} className="text-zinc-300 bg-zinc-900/50 p-2 m-2" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
+              <input {...register("password", {required: true})} className="text-zinc-300 bg-zinc-900/50 p-2 m-2" placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
               
               
               {errorNotification.length > 0 &&
@@ -204,13 +246,18 @@ const Index = () => {
         </div>
       }
       </a.div>}
-      {loggedIn && <a.div style={contentSpring} className="w-[600px] portrait:w-[80%] h-82 fixed bg-zinc-900/75 rounded-xl left-0 right-0 top-20 m-auto">
+      {showContent && <a.div style={contentSpring} className="w-[600px] portrait:w-[80%] h-82 fixed bg-zinc-900/75 rounded-xl left-0 right-0 top-20 m-auto">
         <div className="text-center m-4">
             <h1 className="text-4xl font-bold text-white">Minecraft Remote (work in progress!)</h1>
             <p className="text-zinc-100">You&apos;re logged in!</p>
-            {remoteData && <button onClick={() => setRedstoneButton(1, setRemoteData)} className="text-zinc-300 bg-zinc-900/50 p-2 m-2">Redstone 1: {remoteData.redstone_1.state ? "On" : "Off"}</button>}
-            <GraphComponent />
-            <button onClick={() => signOut()} className="text-zinc-300 bg-zinc-900/50 p-2 m-2">Logout</button>
+            {remoteData && <button onClick={() => {
+              setWaiting({...waiting, redstone_1: true})
+              setRedstoneButton(1, setRemoteData).then(() => {
+                setWaiting({...waiting, redstone_1: false})
+              })
+            }} className="text-zinc-300 bg-zinc-900/50 p-2 m-2">Redstone 1: {!waiting.redstone_1 ? remoteData.redstone_1.state ? "On" : "Off" : <BarLoader />}</button>}
+            {/*renderGraph && <GraphComponent />*/}
+            <button onClick={() => signOut({redirect: false})} className="text-zinc-300 bg-zinc-900/50 p-2 m-2">Logout</button>
         </div>
       </a.div>}
     </>

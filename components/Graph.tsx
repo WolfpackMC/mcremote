@@ -53,25 +53,25 @@ const Graph = () => {
                         labels.shift()
                         setLabels(labels)
                     }
-                }
-    
-                // Loop through each boolean in the visibility array and set the visibility of the corresponding label
-                visibility.forEach((visible, index) => {
-                    graph.setVisibility(index, visible)
-                })
-    
-                // Scroll to the right
-    
-                // Get date window options
-                const dateWindow = graph.xAxisRange()
-    
-                // Set the date window to the current date and the current date minus the zoom value
-                graph.updateOptions({
-                    dateWindow: [dateWindow[1] - zoomValue, dateWindow[1]]
-                })
+
+                    // Loop through each boolean in the visibility array and set the visibility of the corresponding label
+                    visibility.forEach((visible, index) => {
+                        graph.setVisibility(index, visible)
+                    })
         
-                return () => {
-                    graph.destroy()
+                    // Scroll to the right
+        
+                    // Get date window options
+                    const dateWindow = graph.xAxisRange()
+        
+                    // Set the date window to the current date and the current date minus the zoom value
+                    graph.updateOptions({
+                        dateWindow: [dateWindow[1] - zoomValue, dateWindow[1]]
+                    })
+            
+                    return () => {
+                        graph.destroy()
+                    }
                 }
             }
         }
