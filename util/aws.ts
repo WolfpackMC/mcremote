@@ -1,21 +1,19 @@
-import * as uuid from 'uuid'
-import {
-  DynamoDBClient,
-  PutItemCommand,
-  GetItemCommand,
-  UpdateItemCommand,
-  DeleteItemCommand
-} from '@aws-sdk/client-dynamodb'
-import getConfig from 'next/config'
-import { NextApiRequest, NextApiResponse } from 'next'
+import { DynamoDB, DynamoDBClientConfig } from "@aws-sdk/client-dynamodb"
+import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb"
+import { DynamoDBAdapter } from "@next-auth/dynamodb-adapter"
 
-const { publicRuntimeConfig } = getConfig()
-const { READ_ACCESS_KEY, READ_SECRET_KEY } = publicRuntimeConfig
+const config: DynamoDBClientConfig = {
+  region: "us-east-1",
+  credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+  },
+}
 
-export const client = new DynamoDBClient({
-    credentials: {
-        accessKeyId: READ_ACCESS_KEY,
-        secretAccessKey: READ_SECRET_KEY
-    },
-    region: "us-east-1"
+export const client = DynamoDBDocument.from(new DynamoDB(config), {
+  marshallOptions: {
+      convertEmptyValues: true,
+      removeUndefinedValues: true,
+      convertClassInstanceToMap: true,
+  },
 })
