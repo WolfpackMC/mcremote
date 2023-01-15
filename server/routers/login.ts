@@ -32,8 +32,6 @@ export {}
 //         // Convert saltBuffer to uint8array
 //         const saltUint8Array = new Uint8Array(saltBuffer)
 
-
-
 //         const newHash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pepper + saltUint8Array + input.password))
 
 //         console.log("Hey, this happened!")

@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ApiKey {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  account   Account  @relation(fields: [accountId], references: [id], name: "AccountToApiKey")
+  accountId Int
+}
+
+model Account {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  password  String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  ApiKeys   ApiKey[]   @relation("AccountToApiKey")
+  endpoints Endpoint[] @relation("AccountToEndpoint")
+}
+
+model Endpoint {
+  id        Int          @id @default(autoincrement())
+  name      String
+  url       String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  account   Account      @relation(fields: [accountId], references: [id], name: "AccountToEndpoint")
+  accountId Int
+  gauges    Gauge[]      @relation("EndpointToGauge")
+  redstones Redstone[]   @relation("EndpointToRedstone")
+  reactors  BigReactor[] @relation("EndpointToBigReactor")
+}
+
+model Gauge {
+  id         Int      @id @default(autoincrement())
+  name       String
+  value      Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  endpoint   Endpoint @relation(fields: [endpointId], references: [id], name: "EndpointToGauge")
+  endpointId Int
+}
+
+model BigReactor {
+  id                 Int      @id @default(autoincrement())
+  name               String
+  active             Boolean  @default(false)
+  ambientTemperature Float    @default(0)
+  apiVersion         String   @default("0.0.0")
+  capacity           Int      @default(0)
+  producedLastTick   Int      @default(0)
+  stored             Int      @default(0)
+  casingTemperature  Float    @default(0)
+  connected          Boolean  @default(false)
+  controlRodCount    Int      @default(0)
+  fuelTemperature    Float    @default(0)
+  stackTemperature   Float    @default(0)
+  fuelBurnedLastTick Float    @default(0)
+  fuelReactivity     Float    @default(0)
+  fuelWaste          Int      @default(0)
+  totalFuel          Int      @default(0)
+  insertionValue     Float    @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  endpoint           Endpoint @relation(fields: [endpointId], references: [id], name: "EndpointToBigReactor")
+  endpointId         Int
+}
+
+model Redstone {
+  id         Int      @id @default(autoincrement())
+  name       String
+  state      Boolean
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  endpoint   Endpoint @relation(fields: [endpointId], references: [id], name: "EndpointToRedstone")
+  endpointId Int
+}

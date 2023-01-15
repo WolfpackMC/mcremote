@@ -6,7 +6,6 @@ export {}
 // import { GetItemCommand } from '@aws-sdk/client-dynamodb'
 // import { unstable_getServerSession } from "next-auth"
 
-
 // const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 //     const session = await unstable_getServerSession(req)
 //     switch (req.method) {

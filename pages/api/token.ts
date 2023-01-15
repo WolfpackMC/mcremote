@@ -5,7 +5,6 @@ export {}
 
 // import { GetItemCommand } from '@aws-sdk/client-dynamodb'
 
-
 // const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 //     switch (req.method) {
 //         case "POST":
@@ -20,7 +19,6 @@ export {}
 //                 }
 //             }
 
-            
 //             const command = new GetItemCommand(params)
 //             const data = await client.send(command)
 //             if (data.Item) {

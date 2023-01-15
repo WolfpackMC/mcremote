@@ -7,7 +7,6 @@ export {}
 
 // import { getToken } from "next-auth/jwt"
 
-
 // const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 //     const session = await getToken({ req })
 //     switch (req.method) {

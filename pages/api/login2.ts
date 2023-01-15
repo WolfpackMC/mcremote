@@ -43,14 +43,11 @@ export {}
 //         // Convert saltBuffer to uint8array
 //         const saltUint8Array = new Uint8Array(saltBuffer)
 
-
-
 //         const newHash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pepper + saltUint8Array + password))
 
 //         if (Buffer.from(newHash).equals(hashed_passwordBuffer)) {
 //             return res.status(200).json({ id: user.Item.id, name: user.Item.username })
 //         }
-        
 
 //         return res.status(401).json({ message: "Access denied" })
 //         //res.status(200).json({ name: username, id: user.Item.id })
