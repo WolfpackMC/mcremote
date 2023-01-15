@@ -261,21 +261,22 @@ const Index = () => {
             {endpointData.data && endpointData.data.length === 0 && (
               <p className="text-zinc-100">No endpoints found</p>
             )}
-            {reactorData.data && reactorData.data.map(reactor => {
-              return (
-                <div key={reactor.id} className="text-zinc-100">
-                  <p>
-                    <button onClick={
-                      () => {
-                        router.push(`/reactor/${reactor.id}`)
-                      }
-                    }>
-                      <b>{reactor.name}</b>
-                    </button>
-                  </p>
-                </div>
-              )
-            })}
+            {reactorData.data &&
+              reactorData.data.map(reactor => {
+                return (
+                  <div key={reactor.id} className="text-zinc-100">
+                    <p>
+                      <button
+                        onClick={() => {
+                          router.push(`/reactor/${reactor.id}`)
+                        }}
+                      >
+                        <b>{reactor.name}</b>
+                      </button>
+                    </p>
+                  </div>
+                )
+              })}
             {/*renderGraph && <GraphComponent />*/}
             <button
               onClick={() => signOut({ redirect: false })}

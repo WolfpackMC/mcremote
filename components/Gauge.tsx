@@ -2,8 +2,6 @@ import { BigReactor } from '@prisma/client'
 import { useRef } from 'react'
 import ReactSpeedometer, { Transition } from 'react-d3-speedometer'
 
-
-
 export default function GaugeComponent({
   value = 0,
   minValue = 0,
@@ -34,7 +32,6 @@ export default function GaugeComponent({
   paddingHorizontal = 0,
   paddingVertical = 0,
 }) {
-  
   return (
     <ReactSpeedometer
       value={value}

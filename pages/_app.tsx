@@ -6,7 +6,10 @@ import type { Session } from 'next-auth'
 
 import { trpc } from '../util/trpc'
 
-const App = ({ Component, pageProps: { session, ...pageProps } }: AppProps<{ session: Session }>) => {
+const App = ({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps<{ session: Session }>) => {
   return (
     <SessionProvider session={session}>
       <Component {...pageProps} />

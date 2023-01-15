@@ -5,9 +5,6 @@ import prisma from '../../util/prisma'
 
 import { Endpoint, Redstone, BigReactor } from '@prisma/client'
 
-import { EventEmitter } from 'events'
-import { observable } from '@trpc/server/observable'
-
 // import promClient from 'prom-client'
 
 // const httpRequestDurationMicroseconds = new promClient.Histogram({
@@ -16,7 +13,6 @@ import { observable } from '@trpc/server/observable'
 //   labelNames: ['method', 'route', 'status'],
 //   buckets: [0.1, 5, 15, 50, 100, 500],
 // })
-
 
 // const collectDefaultMetrics = promClient.collectDefaultMetrics
 // const Registry = promClient.Registry
@@ -31,7 +27,7 @@ import { observable } from '@trpc/server/observable'
 //       labelNames: ['reactor'],
 //       registers: [register],
 //     })
-    
+
 //     const capacity = new promClient.Gauge({
 //       name: `${reactor.id}_reactor_capacity`,
 //       help: 'Capacity of the reactor',
@@ -51,9 +47,6 @@ import { observable } from '@trpc/server/observable'
 //   console.log(data)
 // })
 
-
-const ee = new EventEmitter()
-
 export const appRouter = router({
   hello: procedure
     .input(
@@ -69,49 +62,44 @@ export const appRouter = router({
   brReactor: procedure
     .input(z.number().optional())
     .query(async ({ ctx, input }) => {
-
-      console.log(ctx)
-      console.log("--")
-      console.log(input)
-
       if (input) {
         const reactor = await prisma.bigReactor.findUnique({
+          where: {
+            id: parseInt(input.toString()),
+          },
+        })
+
+        if (reactor) {
+          return [reactor]
+        }
+      }
+
+      const account = await prisma.account.findUnique({
         where: {
-          id: parseInt(input.toString()),
+          // @ts-ignore
+          id: parseInt(ctx.session.token.userId),
+        },
+        include: {
+          endpoints: {
+            include: {
+              reactors: true,
+            },
+          },
         },
       })
 
-      if (reactor) {
-        return [reactor]
+      if (!account) {
+        throw new Error('Account not found')
       }
-    }
 
-    const account = await prisma.account.findUnique({
-      where: {
-        // @ts-ignore
-        id: parseInt(ctx.session.token.userId),
-      },
-      include: {
-        endpoints: {
-          include: {
-            reactors: true,
-          },
-        },
-      },
-    })
+      let reactors: BigReactor[] = []
 
-    if (!account) {
-      throw new Error('Account not found')
-    }
+      account.endpoints.forEach(endpoint => {
+        reactors.push(...endpoint.reactors)
+      })
 
-    let reactors: BigReactor[] = []
-
-    account.endpoints.forEach(endpoint => {
-      reactors.push(...endpoint.reactors)
-    })
-
-    return reactors
-  }),
+      return reactors
+    }),
   redstones: procedure.query(async ({ ctx }) => {
     // id is under ctx.session.token.userId
     const account = await prisma.account.findUnique({

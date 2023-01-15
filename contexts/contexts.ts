@@ -8,17 +8,15 @@ import ws from 'ws'
 import { unstable_getServerSession } from 'next-auth'
 import { authOptions } from '../server/auth'
 
-export const trpcContext = async (
-  {
-    req,
-    res,
-  } : trpcNext.CreateNextContextOptions
-) => {
+export const trpcContext = async ({
+  req,
+  res,
+}: trpcNext.CreateNextContextOptions) => {
   const session = await unstable_getServerSession(req, res, authOptions)
   return {
     session,
     req,
-    res
+    res,
   }
 }
 

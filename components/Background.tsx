@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useContext, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useSpring, animated as a } from '@react-spring/web'
 
 import Image from 'next/image'

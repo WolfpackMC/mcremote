@@ -1,4 +1,4 @@
-export { }
+export {}
 // import { generateOpenApiDocument } from 'trpc-openapi'
 
 // import { appRouter } from './routers/_app'
