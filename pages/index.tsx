@@ -6,7 +6,6 @@ import { images, setImageLoaded } from '../util/data'
 import { useSpring, animated as a } from '@react-spring/web'
 
 import { useRouter } from 'next/router'
-import dynamic from 'next/dynamic'
 
 import { useSession, signIn, signOut } from 'next-auth/react'
 
@@ -14,7 +13,6 @@ import { useForm } from 'react-hook-form'
 import BarLoader from 'react-spinners/BarLoader'
 
 import { trpc } from '../util/trpc'
-import { Endpoint, Prisma } from '@prisma/client'
 
 const Index = () => {
   const { data: session, status } = useSession()
@@ -61,8 +59,6 @@ const Index = () => {
   const endpointData = trpc.redstones.useQuery()
 
   const reactorData = trpc.brReactor.useQuery()
-
-  const test = trpc.set.useMutation()
 
   useEffect(() => {
     const { error, callbackUrl } = router.query
@@ -258,14 +254,6 @@ const Index = () => {
                   <div key={endpoint.id} className="text-zinc-100">
                     <p>
                       <b>{endpoint.name}</b>
-                    </p>
-                    <p>
-                      <button
-                        className="text-zinc-300 bg-zinc-900/50 p-2 m-2"
-                        onClick={() => test.mutate({ redstone: endpoint.id })}
-                      >
-                        {endpoint.state ? 'On' : 'Off'}
-                      </button>
                     </p>
                   </div>
                 )

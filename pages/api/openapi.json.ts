@@ -1,10 +1,11 @@
-import { NextApiRequest, NextApiResponse } from 'next'
+export { }
+// import { NextApiRequest, NextApiResponse } from 'next'
 
-import { openApiDocument } from '../../server/openapi'
+// import { openApiDocument } from '../../server/openapi'
 
-// Respond with our OpenAPI schema
-const handler = (req: NextApiRequest, res: NextApiResponse) => {
-  res.status(200).send(openApiDocument)
-}
+// // Respond with our OpenAPI schema
+// const handler = (req: NextApiRequest, res: NextApiResponse) => {
+//   res.status(200).send(openApiDocument)
+// }
 
-export default handler
+// export default handler

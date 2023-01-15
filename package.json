@@ -33,6 +33,7 @@
     "aws-cdk": "^2.58.1",
     "aws-sdk": "^2.1286.0",
     "chart.js": "^4.1.1",
+    "critters": "^0.0.16",
     "dygraphs": "^2.1.0",
     "eslint": "8.30.0",
     "eslint-config-next": "13.1.1",

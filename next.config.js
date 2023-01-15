@@ -2,6 +2,10 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  experimental: {
+    optimizeCss: true,
+    scrollRestoration: true,
+  },
   publicRuntimeConfig: {
     READ_ACCESS_KEY: process.env.READ_ACCESS_KEY,
     READ_SECRET_KEY: process.env.READ_SECRET_KEY,

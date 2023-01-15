@@ -70,6 +70,10 @@ export const appRouter = router({
     .input(z.number().optional())
     .query(async ({ ctx, input }) => {
 
+      console.log(ctx)
+      console.log("--")
+      console.log(input)
+
       if (input) {
         const reactor = await prisma.bigReactor.findUnique({
         where: {
