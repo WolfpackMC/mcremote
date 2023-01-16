@@ -2,8 +2,6 @@ import { AuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import prisma from '../util/prisma'
 
-const pepper = () => process.env.PEPPER as string
-
 export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
@@ -78,7 +76,7 @@ export const authOptions: AuthOptions = {
             const newHash = await crypto.subtle.digest(
               'SHA-256',
               new TextEncoder().encode(
-                pepper() + saltUint8Array + credentials.password,
+                process.env.PEPPER as string + saltUint8Array + credentials.password,
               ),
             )
 
