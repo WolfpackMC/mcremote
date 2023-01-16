@@ -59,6 +59,31 @@ export const appRouter = router({
         greeting: `hello ${input.text}`,
       }
     }),
+  setBrState: protectedProcedure
+    .input(z.object({
+      id: z.number(),
+      state: z.boolean(),
+    }))
+    .mutation(async ({ input }) => {
+
+      try {
+        await prisma.bigReactor.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            active: input.state,
+          },
+        })
+      } catch (e) {
+        console.error(e)
+        throw new Error('Failed to update reactor state')
+      }
+
+      return {
+        success: true,
+      }
+    }),
   brReactor: procedure
     .input(z.number().optional())
     .query(async ({ ctx, input }) => {

@@ -11,6 +11,7 @@ import { images, setImageLoaded } from '../../util/data'
 import { Icon } from '@iconify/react'
 
 import CountUp, { useCountUp } from 'react-countup'
+import { useSession } from 'next-auth/react'
 
 const GaugeComponent = dynamic(() => import('../../components/Gauge'), {
   ssr: false,
@@ -29,6 +30,8 @@ const transitionSettings = {
 export default function Reactor() {
   const [loadedImages, setLoadedImages] = useState<string[]>([])
 
+  const { data: session, status } = useSession()
+
   const [date, setDate] = useState(Date.now())
 
   const router = useRouter()
@@ -40,6 +43,8 @@ export default function Reactor() {
 
   const reactorData = trpc.brReactor.useQuery(parseInt(id as string))
 
+  const brMutation = trpc.setBrState.useMutation()
+
   const [backgroundSpring, setBackgroundSpring] = useSpring(() => ({
     scale: 1,
     opacity: 0,
@@ -47,6 +52,7 @@ export default function Reactor() {
 
   const [colorSpring, setColorSpring] = useSpring(() => ({
     borderColor: 'rgba(0,0,0,200)',
+    color: 'rgba(0,0,0,200)',
     config: {
       friction: 20,
     },
@@ -82,6 +88,11 @@ export default function Reactor() {
               ? 'rgba(100,50,50,1)'
               : 'rgba(100,200,100,200)'
             : 'rgba(100,50,50,200)',
+          color: reactorData.data?.[0].active
+            ? time_since_update > 5
+              ? 'rgba(0,0,0,200)'
+              : 'rgba(100,50,50,200)'
+            : 'rgba(100,200,100,200)',
         })
         time_since_update > 5
           ? setWarningSpring.start({
@@ -136,6 +147,18 @@ export default function Reactor() {
               <p className="text-zinc-100">
                 {reactorData.data?.[0].apiVersion}
               </p>
+              {session && (
+                <a.button onClick={
+                  () => {
+                    brMutation.mutateAsync({
+                      id: parseInt(id as string),
+                      state: !reactorData.data?.[0].active,
+                    })
+                  }
+                } style={colorSpring}>
+                  <Icon icon="mdi:power" className="text-4xl" />
+                </a.button>
+              )}
               <a.p
                 ref={warningRef}
                 style={warningSpring}
@@ -269,9 +292,7 @@ export default function Reactor() {
               </p>
               <GaugeComponent
                 value={
-                  ((reactorData.data?.[0].controlRodCount * 28 * 1000) /
-                    reactorData.data?.[0].totalFuel) *
-                  100
+                  reactorData.data?.[0].totalFuel / (reactorData.data?.[0].controlRodCount * 28 * 1000) * 100
                 }
                 width={150}
                 height={100}
@@ -287,9 +308,7 @@ export default function Reactor() {
               <p className="text-center -mt-5 font-bold text-zinc-300">
                 <CountUp
                   end={
-                    ((reactorData.data?.[0].controlRodCount * 28 * 1000) /
-                      reactorData.data?.[0].totalFuel) *
-                    100
+                    reactorData.data?.[0].totalFuel / (reactorData.data?.[0].controlRodCount * 28 * 1000) * 100
                   }
                   preserveValue={true}
                   suffix={'%'}

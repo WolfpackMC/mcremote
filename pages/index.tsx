@@ -166,19 +166,6 @@ const Index = () => {
     }
   }, [loggingIn, username, password])
 
-  useEffect(() => {
-    if (loggedIn) {
-      // pollDetails(setEndpoints)
-
-      const interval = setInterval(() => {
-        console.log(endpointData.data)
-        endpointData.refetch()
-      }, 500)
-
-      return () => clearInterval(interval)
-    }
-  }, [loggedIn, endpointData])
-
   const onSubmit = (data: any) => {
     setUsername(data.username)
     setPassword(data.password)
