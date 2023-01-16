@@ -1,4 +1,3 @@
-import { SpringRef } from '@react-spring/web'
 import { Dispatch, SetStateAction } from 'react'
 
 export const images = [
