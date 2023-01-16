@@ -2,6 +2,8 @@ import { AuthOptions } from "next-auth"
 import CredentialsProvider from 'next-auth/providers/credentials'
 import prisma from '../util/prisma'
 
+import crypto from 'crypto'
+
 const pepper = process.env.PEPPER as string
 
 
@@ -76,12 +78,7 @@ export const authOptions: AuthOptions = {
               // Convert saltBuffer to uint8array
               const saltUint8Array = new Uint8Array(saltBuffer)
 
-              const newHash = await crypto.subtle.digest(
-                'SHA-256',
-                new TextEncoder().encode(
-                  pepper + saltUint8Array + credentials.password,
-                ),
-              )
+              const newHash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pepper + saltUint8Array + credentials.password))
 
               return Buffer.from(newHash).equals(hashed_passwordBuffer)
                 ? { id: user.id.toString(), name: user.name }
