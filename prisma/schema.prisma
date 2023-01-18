@@ -12,8 +12,8 @@ model ApiKey {
   key       String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  account   Account  @relation(fields: [accountId], references: [id], name: "AccountToApiKey")
   accountId Int
+  account   Account  @relation("AccountToApiKey", fields: [accountId], references: [id])
 }
 
 model Account {
@@ -27,16 +27,17 @@ model Account {
 }
 
 model Endpoint {
-  id        Int          @id @default(autoincrement())
-  name      String
-  url       String
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  account   Account      @relation(fields: [accountId], references: [id], name: "AccountToEndpoint")
-  accountId Int
-  gauges    Gauge[]      @relation("EndpointToGauge")
-  redstones Redstone[]   @relation("EndpointToRedstone")
-  reactors  BigReactor[] @relation("EndpointToBigReactor")
+  id              Int               @id @default(autoincrement())
+  name            String
+  url             String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  accountId       Int
+  reactors        BigReactor[]      @relation("EndpointToBigReactor")
+  account         Account           @relation("AccountToEndpoint", fields: [accountId], references: [id])
+  gauges          Gauge[]           @relation("EndpointToGauge")
+  InductionMatrix InductionMatrix[]
+  redstones       Redstone[]        @relation("EndpointToRedstone")
 }
 
 model Gauge {
@@ -45,8 +46,8 @@ model Gauge {
   value      Float
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  endpoint   Endpoint @relation(fields: [endpointId], references: [id], name: "EndpointToGauge")
   endpointId Int
+  endpoint   Endpoint @relation("EndpointToGauge", fields: [endpointId], references: [id])
 }
 
 model BigReactor {
@@ -66,12 +67,12 @@ model BigReactor {
   fuelBurnedLastTick Float    @default(0)
   fuelReactivity     Float    @default(0)
   fuelWaste          Int      @default(0)
-  totalFuel          Int      @default(0)
-  insertionValue     Float    @default(0)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
-  endpoint           Endpoint @relation(fields: [endpointId], references: [id], name: "EndpointToBigReactor")
   endpointId         Int
+  totalFuel          Int      @default(0)
+  insertionValue     Float    @default(0)
+  endpoint           Endpoint @relation("EndpointToBigReactor", fields: [endpointId], references: [id])
 }
 
 model Redstone {
@@ -80,6 +81,28 @@ model Redstone {
   state      Boolean
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  endpoint   Endpoint @relation(fields: [endpointId], references: [id], name: "EndpointToRedstone")
   endpointId Int
+  endpoint   Endpoint @relation("EndpointToRedstone", fields: [endpointId], references: [id])
+}
+
+model InductionMatrix {
+  id                     Int      @id @default(autoincrement())
+  name                   String
+  energy                 Float
+  energyFilledPercentage Float
+  energyNeeded           Float
+  installedCells         Int
+  installedProviders     Int
+  lastInput              Float
+  lastOutput             Float
+  maxEnergy              Float
+  transferCap            Float
+  active                 Boolean
+  length                 Int
+  width                  Int
+  height                 Int
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime
+  endpointId             Int
+  Endpoint               Endpoint @relation(fields: [endpointId], references: [id])
 }
