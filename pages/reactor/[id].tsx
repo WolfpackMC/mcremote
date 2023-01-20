@@ -148,14 +148,15 @@ export default function Reactor() {
                 {reactorData.data?.[0].apiVersion}
               </p>
               {session && (
-                <a.button onClick={
-                  () => {
+                <a.button
+                  onClick={() => {
                     brMutation.mutateAsync({
                       id: parseInt(id as string),
                       state: !reactorData.data?.[0].active,
                     })
-                  }
-                } style={colorSpring}>
+                  }}
+                  style={colorSpring}
+                >
                   <Icon icon="mdi:power" className="text-4xl" />
                 </a.button>
               )}
@@ -292,7 +293,9 @@ export default function Reactor() {
               </p>
               <GaugeComponent
                 value={
-                  reactorData.data?.[0].totalFuel / (reactorData.data?.[0].controlRodCount * 28 * 1000) * 100
+                  (reactorData.data?.[0].totalFuel /
+                    (reactorData.data?.[0].controlRodCount * 28 * 1000)) *
+                  100
                 }
                 width={150}
                 height={100}
@@ -308,7 +311,9 @@ export default function Reactor() {
               <p className="text-center -mt-5 font-bold text-zinc-300">
                 <CountUp
                   end={
-                    reactorData.data?.[0].totalFuel / (reactorData.data?.[0].controlRodCount * 28 * 1000) * 100
+                    (reactorData.data?.[0].totalFuel /
+                      (reactorData.data?.[0].controlRodCount * 28 * 1000)) *
+                    100
                   }
                   preserveValue={true}
                   suffix={'%'}

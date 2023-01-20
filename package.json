@@ -37,6 +37,7 @@
     "react-d3-speedometer": "^1.1.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.42.1",
+    "react-spinners": "^0.13.7",
     "redis": "^4.5.1",
     "sharp": "^0.31.3",
     "superjson": "^1.12.2",

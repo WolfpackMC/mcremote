@@ -4,7 +4,6 @@ import * as trpcNext from '@trpc/server/adapters/next'
 import type { inferAsyncReturnType } from '@trpc/server'
 import { NodeHTTPCreateContextFnOptions } from '@trpc/server/dist/adapters/node-http/types'
 import { IncomingMessage } from 'http'
-import ws from 'ws'
 import { unstable_getServerSession } from 'next-auth'
 import { authOptions } from '../server/auth'
 

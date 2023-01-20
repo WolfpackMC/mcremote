@@ -11,8 +11,8 @@ const nextConfig = {
     READ_SECRET_KEY: process.env.READ_SECRET_KEY,
   },
   images: {
-    domains: ["avatars.githubusercontent.com", "db17gxef1g90a.cloudfront.net"],
-  }
+    domains: ['avatars.githubusercontent.com', 'db17gxef1g90a.cloudfront.net'],
+  },
 }
 
 module.exports = nextConfig

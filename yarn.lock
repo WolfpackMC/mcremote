@@ -4423,6 +4423,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-spinners@npm:^0.13.7":
+  version: 0.13.7
+  resolution: "react-spinners@npm:0.13.7"
+  peerDependencies:
+    react: ^16.0.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: d7a555b42313d301e561c39a4f20ae1b0da55541a6936ab44147eca5c8185036d4f6caebf450a9e6303211270f1aa72be843cbc1328024c832507c3f89ef0116
+  languageName: node
+  linkType: hard
+
 "react-ssr-prepass@npm:^1.5.0":
   version: 1.5.0
   resolution: "react-ssr-prepass@npm:1.5.0"
@@ -5358,6 +5368,7 @@ __metadata:
     react-d3-speedometer: ^1.1.0
     react-dom: ^18.2.0
     react-hook-form: ^7.42.1
+    react-spinners: ^0.13.7
     redis: ^4.5.1
     sharp: ^0.31.3
     superjson: ^1.12.2

@@ -3,7 +3,7 @@ import { procedure, protectedProcedure, router } from '../trpc'
 
 import prisma from '../../util/prisma'
 
-import { Endpoint, Redstone, BigReactor } from '@prisma/client'
+import { Endpoint, Redstone, BigReactor, InductionMatrix } from '@prisma/client'
 
 // import promClient from 'prom-client'
 
@@ -60,12 +60,13 @@ export const appRouter = router({
       }
     }),
   setBrState: protectedProcedure
-    .input(z.object({
-      id: z.number(),
-      state: z.boolean(),
-    }))
+    .input(
+      z.object({
+        id: z.number(),
+        state: z.boolean(),
+      }),
+    )
     .mutation(async ({ input }) => {
-
       try {
         await prisma.bigReactor.update({
           where: {
@@ -84,6 +85,45 @@ export const appRouter = router({
         success: true,
       }
     }),
+  iMatrix: procedure.input(z.number().optional()).query(async ({ input }) => {
+    if (input) {
+      const iMatrix = await prisma.inductionMatrix.findUnique({
+        where: {
+          id: parseInt(input.toString()),
+        },
+      })
+
+      if (iMatrix) {
+        return [iMatrix]
+      }
+
+      const account = await prisma.account.findUnique({
+        where: {
+          // @ts-ignore
+          id: parseInt(ctx.session.token.userId),
+        },
+        include: {
+          endpoints: {
+            include: {
+              InductionMatrix: true,
+            },
+          },
+        },
+      })
+
+      if (!account) {
+        throw new Error('Account not found')
+      }
+
+      let iMatrices: InductionMatrix[] = []
+
+      account.endpoints.forEach(endpoint => {
+        iMatrices.push(...endpoint.InductionMatrix)
+      })
+
+      return iMatrices
+    }
+  }),
   brReactor: procedure
     .input(z.number().optional())
     .query(async ({ ctx, input }) => {
